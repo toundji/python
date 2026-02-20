@@ -1,10 +1,21 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, make_response
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta
+import os
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'eglise_benin_2026_pro_secure'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///paroisses.db'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'eglise_benin_2026_pro_secure')
+
+# Configuration de la base de données : PostgreSQL en production, SQLite en développement
+DATABASE_URL = os.environ.get('DATABASE_URL')
+if DATABASE_URL:
+    # Render fournit postgres://, mais SQLAlchemy nécessite postgresql://
+    if DATABASE_URL.startswith('postgres://'):
+        DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
+    app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
+else:
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///paroisses.db'
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
@@ -193,8 +204,9 @@ def admin():
         return redirect(url_for('admin'))
     return render_template('admin.html', paroisses=Paroisse.query.all())
 
-if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-    app.run(debug=True, host='127.0.0.1', port=5000)
+# Initialisation de la base de données
+with app.app_context():
+    db.create_all()
 
+if __name__ == '__main__':
+    app.run(debug=True, host='127.0.0.1', port=5000)

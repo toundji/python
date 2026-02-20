@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion - {{ paroisse.nom }}</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f8fafc; padding: 20px; color: #334155; }
+        .container { max-width: 650px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        h2 { text-align: center; color: #1e293b; margin-bottom: 25px; }
+        .section { margin-bottom: 20px; padding: 20px; border: 1px solid #e2e8f0; border-radius: 10px; }
+        .section-annonce { background-color: #fffbeb; border-color: #fde68a; }
+        /* Nouvelle section pour les intentions */
+        .section-intentions { background-color: #f0f9ff; border-color: #bae6fd; text-align: center; }
+        label { font-weight: bold; display: block; margin-bottom: 8px; font-size: 0.95rem; }
+        textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; font-size: 1rem; }
+        .grid-horaires { display: grid; grid-template-columns: 1fr 2fr; gap: 10px; align-items: center; }
+        input[type="text"] { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; }
+        .btn { background-color: #10b981; color: white; padding: 15px; border: none; border-radius: 8px; width: 100%; cursor: pointer; font-weight: bold; font-size: 1.1rem; margin-top: 10px; transition: background 0.2s; text-decoration: none; display: inline-block; }
+        .btn:hover { background-color: #059669; }
+        /* Style pour le bouton spécifique aux intentions */
+        .btn-blue { background-color: #0284c7; margin-top: 5px; }
+        .btn-blue:hover { background-color: #0369a1; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Espace de Gestion : {{ paroisse.nom }}</h2>
+    
+    <div class="section section-intentions">
+        <label>📋 Tirage des intentions :</label>
+        <p style="font-size: 0.9rem; color: #64748b; margin-bottom: 15px;">Consulter, filtrer par date et imprimer les intentions reçues.</p>
+        <a href="{{ url_for('gestion_intentions', paroisse_id=paroisse.id) }}" class="btn btn-blue">
+            VOIR ET IMPRIMER LES INTENTIONS
+        </a>
+    </div>
+
+    <form action="/modifier-paroisse/{{ paroisse.id }}" method="POST">
+        
+        <div class="section section-annonce">
+            <label>📢 Annonces paroissiales :</label>
+            <textarea name="annonce" rows="4" placeholder="Saisissez les annonces ici...">{{ paroisse.annonce }}</textarea>
+        </div>
+
+        <div class="section">
+            <label>⏰ Horaires des messes :</label>
+            <div class="grid-horaires">
+                {% for jour in ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'] %}
+                    <span>{{ jour|capitalize }} :</span>
+                    <input type="text" name="h_{{ jour }}" value="{{ getattr(paroisse, 'h_' ~ jour) }}">
+                {% endfor %}
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <label>📞 Téléphone de la paroisse :</label>
+                <input type="text" name="telephone" value="{{ paroisse.telephone }}">
+            </div>
+        </div>
+
+        <button type="submit" class="btn">ENREGISTRER LES MODIFICATIONS</button>
+    </form>
+    
+    <p style="text-align: center; margin-top: 20px;">
+        <a href="/" style="color: #94a3b8; text-decoration: none; font-size: 0.9rem;">← Annuler et revenir à l'accueil</a>
+    </p>
+</div>
+
+</body>
+</html>

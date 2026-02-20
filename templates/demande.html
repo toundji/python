@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Faire une demande de messe</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f7f6; padding: 20px; }
+        .form-card { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .intention-row { border-left: 5px solid #10b981; padding: 15px; margin-bottom: 20px; border-radius: 5px; background: #f9fafb; }
+        label { display: block; margin-top: 10px; font-weight: bold; color: #374151; }
+        input, select, textarea { width: 100%; padding: 10px; margin-top: 5px; border-radius: 5px; border: 1px solid #d1d5db; box-sizing: border-box; }
+        button { background: #10b981; color: white; padding: 15px; border: none; border-radius: 8px; cursor: pointer; margin-top: 20px; width: 100%; font-size: 18px; font-weight: bold; }
+        h4 { margin: 0; color: #10b981; text-transform: uppercase; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+<div class="form-card">
+    <h1>Demande de Messe</h1>
+    <form method="POST" id="messeForm">
+        <label>Votre Nom et Prénom :</label>
+        <input type="text" name="nom" required placeholder="Ex: Jean BON">
+
+        <label>Choisir la Paroisse :</label>
+        <select name="paroisse_id" id="paroisse_select" required onchange="genererChamps()">
+            <option value="">-- sélectionner la paroisse --</option>
+            {% for p in paroisses %}
+            <option value="{{ p.id }}">{{ p.nom }}</option>
+            {% endfor %}
+        </select>
+
+        <label>Type de Messe :</label>
+        <select name="type_messe" id="type_messe" required onchange="genererChamps()">
+            <option value="simple">Messe Simple (2000 F)</option>
+            <option value="triduum">Triduum (3 jours - 6000 F)</option>
+            <option value="neuvaine">Neuvaine (9 jours - 18000 F)</option>
+            <option value="trentain">Trentain (30 jours - 60000 F)</option>
+        </select>
+
+        <div id="intentions_container" style="margin-top: 20px;">
+            </div>
+
+        <button type="submit">Valider la demande et payer</button>
+    </form>
+</div>
+
+<script>
+    const dataHoraires = {{ paroisses_data | tojson | safe }};
+
+    function genererChamps() {
+        const typeM = document.getElementById('type_messe').value;
+        const container = document.getElementById('intentions_container');
+        const pId = document.getElementById('paroisse_select').value;
+        
+        let nb = 1;
+        if(typeM === 'triduum') nb = 3;
+        if(typeM === 'neuvaine') nb = 9;
+        if(typeM === 'trentain') nb = 30;
+
+        container.innerHTML = `<h3 style="color:#059669">Détails pour les ${nb} jour(s)</h3>`;
+
+        for (let i = 1; i <= nb; i++) {
+            const row = document.createElement('div');
+            row.className = 'intention-row';
+            // IMPORTANT : name="date_${i}" permet d'envoyer 30 variables différentes à Python
+            row.innerHTML = `
+                <h4>Jour ${i}</h4>
+                <label>Date :</label>
+                <input type="date" name="date_${i}" id="date_${i}" onchange="chargerH(${i})" required>
+                
+                <label>Heure :</label>
+                <select name="heure_${i}" id="heure_${i}" onchange="checkTime(${i})" required>
+                    <option value="">-- choisir date d'abord --</option>
+                </select>
+
+                <label>Intention (Jour ${i}) :</label>
+                <textarea name="texte_${i}" rows="2" placeholder="Ex: Action de grâce..."></textarea>
+            `;
+            container.appendChild(row);
+        }
+    }
+
+    function chargerH(idx) {
+        const pId = document.getElementById('paroisse_select').value;
+        const dIn = document.getElementById('date_' + idx);
+        const hSel = document.getElementById('heure_' + idx);
+
+        if (!pId) { alert("Choisissez une paroisse"); dIn.value=""; return; }
+
+        if (dIn.value) {
+            const jour = new Date(dIn.value).getDay();
+            const chaine = dataHoraires[pId] ? dataHoraires[pId][jour.toString()] : null;
+            hSel.innerHTML = '<option value="">-- Heure --</option>';
+
+            if (chaine && chaine !== "À préciser" && chaine !== "Pas de messe") {
+                chaine.split(',').forEach(h => {
+                    let o = document.createElement('option');
+                    o.value = h.trim(); o.innerHTML = h.trim();
+                    hSel.appendChild(o);
+                });
+            } else {
+                hSel.innerHTML = '<option value="">Pas de messe</option>';
+            }
+        }
+    }
+
+    function checkTime(idx) {
+        const dIn = document.getElementById('date_' + idx);
+        const hSel = document.getElementById('heure_' + idx);
+        if (dIn.value && hSel.value) {
+            const now = new Date();
+            const hClean = hSel.value.replace('h', ':').replace('H', ':');
+            const target = new Date(dIn.value + 'T' + hClean);
+            if (target - now < 7200000) {
+                alert("⚠️ Erreur Jour " + idx + " : Le délai de 2h n'est pas respecté.");
+                hSel.value = "";
+            }
+        }
+    }
+
+    // Initialisation
+    window.onload = genererChamps;
+</script>
+
+</body>
+</html>
+

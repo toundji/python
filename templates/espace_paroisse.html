@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion Paroisse</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f1f5f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+        h2 { color: #1e293b; }
+        p { color: #64748b; font-size: 0.9rem; }
+        input[type="password"] {
+            width: 100%;
+            padding: 15px;
+            margin: 20px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+        button {
+            width: 100%;
+            background: #10b981; /* Le vert visible dans votre code */
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .error {
+            color: #ef4444; /* Le rouge pour les erreurs */
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+        .back-link {
+            display: block;
+            margin-top: 25px;
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Espace Paroisse</h2>
+    <p>Veuillez saisir votre code secret pour modifier vos informations.</p>
+
+    <form method="POST">
+        <input type="password" 
+               name="code_admin" 
+               placeholder="Code secret de la paroisse" 
+               required>
+        
+        <button type="submit">Se connecter</button>
+    </form>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <p class="error">⚠️ {{ message }}</p>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <a href="/" class="back-link">← Retour à l'accueil</a>
+</div>
+
+</body>
+</html>

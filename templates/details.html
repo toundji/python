@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horaires - {{ paroisse.nom }}</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f1f5f9; margin: 0; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        
+        /* En-tête de la paroisse */
+        .header-card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); text-align: center; margin-bottom: 25px; }
+        .header-card h1 { margin: 0; color: #0f172a; font-size: 2.2rem; }
+        .info-paroisse { color: #64748b; margin-top: 10px; font-weight: 500; }
+
+        /* Section Annonce du jour */
+        .annonce-box { background: #fffbeb; border-left: 5px solid #f59e0b; padding: 20px; border-radius: 10px; margin-bottom: 25px; }
+        .annonce-box h3 { margin-top: 0; color: #92400e; font-size: 1.1rem; }
+
+        /* Grille de la semaine (Lundi à Samedi) */
+        .week-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .day-card { background: white; padding: 20px; border-radius: 15px; border: 1px solid #e2e8f0; transition: transform 0.2s; }
+        .day-card:hover { transform: translateY(-3px); }
+        .day-name { display: block; color: #64748b; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        .day-time { font-size: 1.1rem; font-weight: 600; color: #0f172a; margin-top: 5px; }
+
+        /* Section Dimanche (Mise en valeur) */
+        .sunday-card { background: #f0fdf4; border: 2px solid #22c55e; border-radius: 20px; padding: 30px; text-align: center; margin-bottom: 30px; }
+        .sunday-title { color: #15803d; margin-top: 0; font-size: 1.8rem; }
+        .sunday-times { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-top: 15px; }
+        .time-badge { background: #22c55e; color: white; padding: 12px 25px; border-radius: 12px; font-weight: bold; font-size: 1.2rem; box-shadow: 0 4px 10px rgba(34, 197, 94, 0.2); }
+
+        /* Bouton Retour */
+        .btn-back { display: inline-block; background: #1e293b; color: white; padding: 15px 35px; text-decoration: none; border-radius: 10px; font-weight: bold; transition: background 0.2s; }
+        .btn-back:hover { background: #334155; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-card">
+        <h1>{{ paroisse.nom }}</h1>
+        <div class="info-paroisse">
+            <span>📍 {{ paroisse.ville }}</span> | 
+            <span>📞 {{ paroisse.telephone }}</span>
+        </div>
+    </div>
+
+    {% if paroisse.annonce %}
+    <div class="annonce-box">
+        <h3>📢 Annonce de la Paroisse</h3>
+        <p>{{ paroisse.annonce }}</p>
+    </div>
+    {% endif %}
+
+    <h2 style="color: #1e293b; margin-bottom: 15px;">Messes en semaine</h2>
+    <div class="week-grid">
+        {% set planning = [
+            ('Lundi', paroisse.h_lundi),
+            ('Mardi', paroisse.h_mardi),
+            ('Mercredi', paroisse.h_mercredi),
+            ('Jeudi', paroisse.h_jeudi),
+            ('Vendredi', paroisse.h_vendredi),
+            ('Samedi', paroisse.h_samedi)
+        ] %}
+
+        {% for jour, heure in planning %}
+        <div class="day-card">
+            <span class="day-name">{{ jour }}</span>
+            <div class="day-time">{{ heure if heure and heure != "À préciser" else 'Pas de messe' }}</div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="sunday-card">
+        <h2 class="sunday-title">⛪ Messes du Dimanche</h2>
+        <div class="sunday-times">
+            {% if paroisse.h_dimanche and paroisse.h_dimanche != "À préciser" %}
+                {% for h in paroisse.h_dimanche.split(',') %}
+                    <div class="time-badge">{{ h.strip() }}</div>
+                {% endfor %}
+            {% else %}
+                <p style="color: #15803d; font-style: italic;">Horaires à confirmer auprès de la paroisse.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 40px;">
+        <a href="/" class="btn-back">← Retour à la liste</a>
+    </div>
+</div>
+
+</body>
+</html>

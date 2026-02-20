@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Super-Admin - Messes Bénin</title>
+    <style>
+        :root { --primary: #10b981; --dark: #1e293b; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f1f5f9; padding: 20px; }
+        .card { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .form-box { background: #f8fafc; padding: 20px; border-radius: 10px; border: 1px solid #e2e8f0; margin-bottom: 30px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; }
+        .btn-add { background: var(--primary); color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { background: var(--dark); color: white; padding: 12px; text-align: left; }
+        td { padding: 12px; border-bottom: 1px solid #e2e8f0; }
+        .code-badge { background: #e2e8f0; padding: 4px 8px; border-radius: 5px; font-family: monospace; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>🛠️ Super Administration</h2>
+        <p>Utilisez cet espace pour créer les paroisses et leur attribuer un code d'accès.</p>
+        
+        <div class="form-box">
+            <form action="/admin" method="POST" style="display: flex; flex-direction: column; gap: 15px;">
+    <input type="text" name="nom" placeholder="Nom de la paroisse" required 
+           style="padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px;">
+    <input type="text" name="ville" placeholder="Ville" 
+           style="padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px;">
+    
+    <input type="text" name="adresse" placeholder="Adresse complète" 
+           style="padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px;">
+    
+    <input type="text" name="telephone" placeholder="Téléphone (ex: +229...)" 
+           style="padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px;">
+    
+    <input type="text" name="code" placeholder="Code Secret (ex: SEC-01)" required 
+           style="padding: 12px; border: 1px solid #10b981; border-radius: 8px; background: #f0fdf4;">
+    
+    <button type="submit" style="background: #1e293b; color: white; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
+        ➕ Ajouter la Paroisse
+    </button>
+</form>
+        </div>
+
+        <h3>Liste des paroisses et leurs codes</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Paroisse</th>
+                    <th>Ville</th>
+                    <th>Code Secret</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in paroisses %}
+                <tr>
+                    <td><strong>{{ p.nom }}</strong></td>
+                    <td>{{ p.ville }}</td>
+                    <td><span class="code-badge">{{ p.code }}</span></td>
+                    <td><a href="/supprimer_paroisse/{{ p.id }}" style="color: #ef4444; text-decoration: none;">Supprimer</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+

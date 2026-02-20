@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Modifier Horaires - {{ paroisse.nom }}</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f7f6; padding: 20px; }
+        .card { max-width: 600px; margin: 0 auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; color: #333; }
+        input[type="text"], input[type="password"] { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+        .btn { width: 100%; padding: 15px; background: #10b981; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 20px; }
+        .dimanche { background: #f0fdf4; padding: 15px; border-radius: 8px; border: 1px solid #22c55e; grid-column: span 2; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Modifier les horaires des messes</h2>
+    <p>Paroisse : <strong>{{ paroisse.nom }}</strong></p>
+
+    <form method="POST">
+        <div class="grid">
+            <div>
+                <label>Lundi</label>
+                <input type="text" name="h_lundi" value="{{ paroisse.h_lundi }}">
+            </div>
+            <div>
+                <label>Mardi</label>
+                <input type="text" name="h_mardi" value="{{ paroisse.h_mardi }}">
+            </div>
+            <div>
+                <label>Mercredi</label>
+                <input type="text" name="h_mercredi" value="{{ paroisse.h_mercredi }}">
+            </div>
+            <div>
+                <label>Jeudi</label>
+                <input type="text" name="h_jeudi" value="{{ paroisse.h_jeudi }}">
+            </div>
+            <div>
+                <label>Vendredi</label>
+                <input type="text" name="h_vendredi" value="{{ paroisse.h_vendredi }}">
+            </div>
+            <div>
+                <label>Samedi</label>
+                <input type="text" name="h_samedi" value="{{ paroisse.h_samedi }}">
+            </div>
+            
+            <div class="dimanche">
+                <label style="color: #15803d;">🌿 Dimanche (Séparez par des virgules si plusieurs messes)</label>
+                <input type="text" name="h_dimanche" value="{{ paroisse.h_dimanche }}" placeholder="ex: 07h, 09h, 11h">
+            </div>
+        </div>
+
+        <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
+            <label style="color: red;">🔑 Code Secret de la Paroisse (Obligatoire)</label>
+            <input type="password" name="code_admin" required>
+        </div>
+
+        <button type="submit" class="btn">ENREGISTRER LES NOUVEAUX HORAIRES</button>
+    </form>
+</div>
+
+</body>
+</html>
+
+
+
+

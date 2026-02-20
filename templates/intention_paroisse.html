@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intentions de Messe - {{ paroisse.nom }}</title>
+    <style>
+        /* Styles pour l'écran */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; }
+        .container { max-width: 1000px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        
+        /* Barre d'outils cachée à l'impression */
+        .no-print { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            background: #f8fafc; 
+            padding: 20px; 
+            border-radius: 10px; 
+            margin-bottom: 30px; 
+            border: 1px solid #e2e8f0;
+        }
+        .btn { padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: 600; border: none; text-decoration: none; transition: 0.3s; }
+        .btn-print { background-color: #1e293b; color: white; }
+        .btn-print:hover { background-color: #334155; }
+        .btn-filter { background-color: #2563eb; color: white; }
+
+        /* En-tête officiel pour le prêtre */
+        .header-doc { text-align: center; border-bottom: 2px solid #1e293b; margin-bottom: 40px; padding-bottom: 20px; }
+        .header-doc h1 { margin: 0; color: #1e293b; text-transform: uppercase; font-size: 26px; }
+        .header-doc p { margin: 10px 0; font-size: 20px; font-weight: bold; color: #475569; }
+
+        /* Groupement par heure */
+        .section-heure { margin-top: 40px; page-break-inside: avoid; }
+        .titre-heure { 
+            background: #1e293b; 
+            color: #ffffff; 
+            padding: 10px 20px; 
+            font-size: 1.3em; 
+            font-weight: bold; 
+            border-radius: 5px;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; }
+        th, td { border: 1px solid #cbd5e1; padding: 15px; text-align: left; }
+        th { background-color: #f1f5f9; color: #475569; font-size: 0.85em; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .col-donateur { width: 30%; font-weight: 700; color: #1e293b; }
+        .col-texte { width: 70%; font-size: 1.25em; line-height: 1.5; color: #000; }
+
+        /* Ajustements Impression PDF */
+        @media print {
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; width: 100%; max-width: 100%; padding: 0; border-radius: 0; }
+            .no-print { display: none !important; }
+            .titre-heure { border: 2px solid #000; color: #000; background: #eee !important; border-radius: 0; }
+            th { background-color: #f1f5f9 !important; border: 1px solid #000; color: #000; }
+            td { border: 1px solid #000; }
+            .col-texte { font-size: 1.4em; } /* Texte plus grand pour lecture facile à l'ambon */
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="no-print">
+        <form method="GET" style="display: flex; gap: 12px; align-items: center;">
+            <label style="font-weight: bold;">Choisir une date :</label>
+            <input type="date" name="date" value="{{ date_selectionnee }}" style="padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;">
+            <button type="submit" class="btn btn-filter">Actualiser</button>
+        </form>
+        <button onclick="window.print()" class="btn btn-print">🖨️ Imprimer / Exporter PDF</button>
+    </div>
+
+    <div class="header-doc">
+        <h1>{{ paroisse.nom }}</h1>
+        <p>INTENTIONS DE MESSE DU : {{ date_selectionnee }}</p>
+    </div>
+
+    {% if intentions_par_heure %}
+        {% for heure, liste in intentions_par_heure.items() %}
+        <div class="section-heure">
+            <div class="titre-heure">MESSE DE {{ heure }}</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Donateur / Demandeur</th>
+                        <th>Intention de prière</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for int in liste %}
+                    <tr>
+                        <td class="col-donateur">
+                            {{ int.donateur }}<br>
+                            <span style="font-weight: normal; font-size: 0.85em; color: #64748b;">
+                                ({{ int.type_messe }})
+                            </span>
+                        </td>
+                        <td class="col-texte">{{ int.texte }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div style="text-align: center; padding: 100px 0; border: 2px dashed #cbd5e1; border-radius: 12px; margin-top: 20px;">
+            <p style="font-size: 1.5em; color: #94a3b8;">🙏 Aucune intention enregistrée pour le {{ date_selectionnee }}.</p>
+            <p style="color: #64748b;">Vérifiez que des intentions ont été soumises pour cette date précise via le formulaire public.</p>
+        </div>
+    {% endif %}
+
+    <div style="margin-top: 60px; text-align: right; font-size: 0.9em; color: #94a3b8; font-style: italic;" class="no-print">
+        Plateforme Eglise-Bénin 2026
+    </div>
+</div>
+
+</body>
+</html>

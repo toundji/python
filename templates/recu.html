@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Reçu de Demande</title>
+</head>
+<body style="background: #f1f5f9; display: flex; justify-content: center; padding: 40px;">
+
+    <div style="max-width: 450px; width: 100%; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 15px rgba(0,0,0,0.1);">
+        
+        <div style="background: #10b981; color: white; padding: 30px; text-align: center;">
+            <h1 style="margin: 0; font-size: 1.5rem; text-transform: uppercase;">Reçu de Demande</h1>
+            <p style="margin: 10px 0 0; font-size: 0.9rem;">Paroisse : {{ recu.paroisse }}</p>
+        </div>
+
+        <div style="padding: 30px;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #666; margin-bottom: 20px;">
+                <span>REF: {{ recu.reference if recu.reference else "MESSE-" ~ range(1000, 9999) | random }}</span>
+                <span>DATE: {{ recu.date_reçu }}</span>
+            </div>
+
+            <p><strong>Donateur :</strong> {{ recu.donateur }}</p>
+
+            <div style="margin: 20px 0;">
+                <h4 style="color: #10b981; border-bottom: 1px solid #f0fdf4; padding-bottom: 5px;">Détails des Intentions</h4>
+                {% if recu.intentions %}
+                    {% for item in recu.intentions %}
+                        <div style="margin-bottom: 10px; font-size: 0.9rem;">
+                            <strong>{{ item.type }} :</strong> <em>{{ item.texte }}</em>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p style="font-size: 0.9rem;">Intention : <em>{{ recu.intention }}</em></p>
+                {% endif %}
+            </div>
+
+            <div style="background: #f8fafc; padding: 20px; border-radius: 12px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <span>Offrandes Messes :</span>
+                    <span>{{ recu.offrande }} F</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <span>Frais Retrait :</span>
+                    <span>0 F</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid #ddd; padding-bottom: 10px;">
+                    <span>Frais Service :</span>
+                    <span>{{ recu.service if recu.service else "50" }} F</span>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 1.2rem; color: #15803d; margin-top: 10px;">
+                    <span>TOTAL PAYÉ :</span>
+                    <span>{{ recu.total }} FCFA</span>
+                </div>
+            </div>
+
+            <button onclick="window.print()" style="width: 100%; background: #1e293b; color: white; border: none; padding: 15px; border-radius: 10px; margin-top: 30px; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                📷 IMPRIMER / CAPTURER
+            </button>
+
+            <a href="/demande" style="display: block; text-align: center; margin-top: 15px; color: #64748b; text-decoration: none; font-size: 0.9rem;">Faire une autre demande</a>
+        </div>
+    </div>
+
+</body>
+</html>

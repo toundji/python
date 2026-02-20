@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Paroisses - Messes Bénin</title>
+</head>
+<body>
+    <div class="container">
+        <header class="home-hero">
+            <h1>⛪ Choisissez votre Paroisse</h1>
+        </header>
+<div style="max-width: 500px; margin: 20px auto 30px; padding: 0 15px;">
+    <input type="text" id="paroisseInput" onkeyup="filtrerListe()" 
+           placeholder="🔍 Tapez le nom d'une paroisse..." 
+           style="width: 100%; padding: 12px 20px; border-radius: 25px; border: 2px solid #3b82f6; outline: none; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+</div>
+<script>
+function filtrerListe() {
+    let input = document.getElementById('paroisseInput').value.toLowerCase();
+    // On cible vos cartes de paroisses
+    let cards = document.getElementsByClassName('paroisse-card'); 
+
+    for (let i = 0; i < cards.length; i++) {
+        // On récupère le nom de la paroisse dans le <h3> de la carte
+        let nomParoisse = cards[i].querySelector('h3').innerText.toLowerCase();
+        
+        // Si le nom correspond à la recherche, on affiche, sinon on cache
+        if (nomParoisse.includes(input)) {
+            cards[i].style.display = "";
+        } else {
+            cards[i].style.display = "none";
+        }
+    }
+}
+</script>
+        <div class="paroisses-grid">
+            {% for p in paroisses %}
+            <a href="/paroisse/{{ p.id }}" class="card-link">
+                <div class="selection-card">
+                    <div class="card-icon">🏛️</div>
+                    <h3>{{ p.nom }}</h3>
+                    <p>📍 {{ p.ville }}</p>
+                    <span style="color: #3498db; font-weight: bold;">Voir les horaires →</span>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>
+
+
+

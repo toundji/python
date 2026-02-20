@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Connexion</title>
+</head>
+<body>
+    <div class="card" style="margin: 30px auto; max-width: 400px;">
+        <h2>Connexion Fidèle</h2>
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}<p style="color:red;">{{ messages[0] }}</p>{% endif %}
+        {% endwith %}
+        <form method="POST">
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="password" name="password" placeholder="Mot de passe" required>
+            <button type="submit" class="btn" style="width:100%;">Se connecter</button>
+        </form>
+        <p style="text-align:center;">Nouveau ? <a href="/inscription">Créer un compte</a></p>
+    </div>
+</body>
+</html>

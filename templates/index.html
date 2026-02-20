@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MESHORA | Messes Bénin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#3e5f6e">
+    <button id="mobile-menu-btn" style="display:none; position:fixed; top:15px; left:15px; z-index:2001; background:#e65100; color:white; border:none; padding:10px; border-radius:5px;">
+    <i class="fas fa-bars"></i>
+</button>
+    <style>
+        /* --- STRUCTURE GLOBALE --- */
+        body {
+            display: flex;
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f8fafc;
+            min-height: 100vh;
+        }
+
+        /* --- SIDEBAR FIXE --- */
+        .sidebar {
+            width: 280px;
+            background-color: #3e5f6e; /* Bleu canard */
+            color: white;
+            height: 100vh;
+            position: fixed;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .sidebar-brand {
+            padding: 30px 20px;
+            font-size: 24px;
+            font-weight: bold;
+            background: white;
+            color: #1e293b;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .user-profile {
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .user-profile img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: white;
+            padding: 3px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            margin-bottom: 10px;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+            flex-grow: 1;
+        }
+
+        .nav-links li a {
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            color: #e2e8f0;
+            text-decoration: none;
+            transition: 0.3s;
+            font-size: 1.05rem;
+        }
+
+        .nav-links li.active {
+            background-color: #e65100; /* Orange actif */
+        }
+
+        .nav-links li a:hover:not(.active) {
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        .nav-links i {
+            margin-right: 15px;
+            width: 25px;
+            font-size: 1.2rem;
+        }
+
+        /* --- ZONE DE CONTENU --- */
+        .main-content {
+            margin-left: 280px; /* Espace pour la sidebar */
+            flex-grow: 1;
+            padding: 50px;
+            box-sizing: border-box;
+        }
+
+        .header-section {
+            text-align: left;
+            margin-bottom: 50px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 20px;
+        }
+
+        .header-section h1 {
+            font-size: 2.2rem;
+            color: #1e293b;
+            margin: 0;
+        }
+
+        .header-section p {
+            color: #64748b;
+            font-size: 1.1rem;
+            margin-top: 5px;
+        }
+
+        /* --- GRILLE DES MODULES --- */
+        .home-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+        }
+
+        .menu-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            text-decoration: none;
+            color: #1e293b;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            border: 1px solid #f1f5f9;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 30px rgba(0,0,0,0.1);
+            border-color: #e65100;
+        }
+
+        .card-icon {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .menu-card h3 {
+            font-size: 1.4rem;
+            margin: 10px 0;
+            color: #1e293b;
+        }
+
+        .menu-card p {
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #cbd5e1;
+            background: rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+        <div class="sidebar-brand">MESHORA</div>
+        
+        <div class="user-profile">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
+            <div style="margin-top: 10px; font-weight: 500;">Messes Bénin</div>
+            <small style="opacity: 0.7;">Année Pastorale 2025-2026</small>
+        </div>
+
+        <script>
+    // Script pour ouvrir/fermer la sidebar sur mobile
+    const btn = document.getElementById('mobile-menu-btn');
+    const sidebar = document.querySelector('.sidebar');
+    
+    btn.onclick = () => {
+        if(sidebar.style.left === "0px") {
+            sidebar.style.left = "-280px";
+        } else {
+            sidebar.style.left = "0px";
+        }
+    };
+</script>
+
+        <ul class="nav-links">
+            <li class="active"><a href="{{ url_for('index') }}"><i class="fas fa-home"></i> Accueil</a></li>
+            <li><a href="{{ url_for('liste') }}"><i class="fas fa-church"></i> Paroisses</a></li>
+            <li><a href="{{ url_for('demande') }}"><i class="fas fa-edit"></i> Demande de Messe</a></li>
+            <li><a href="{{ url_for('admin') }}"><i class="fas fa-user-shield"></i> Administration</a></li>
+            <li><a href="{{ url_for('login_paroisse') }}"><i class="fas fa-lock"></i> Espace Paroisse</a></li>
+        </ul>
+
+        <div class="sidebar-footer">
+            &copy; 2026 Messes Bénin<br>Tous droits réservés
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <header class="header-section">
+            <h1>Tableau de Bord</h1>
+            <p>Foi, Service & Communauté au service de l'Église</p>
+        </header>
+
+        <section class="home-grid">
+            <a href="{{ url_for('liste') }}" class="menu-card">
+                <span class="card-icon">⛪</span>
+                <h3>Horaires des Messes</h3>
+                <p>Trouvez une église et les heures de célébration proches de vous à travers les diocèses.</p>
+            </a>
+
+            <a href="{{ url_for('demande') }}" class="menu-card">
+                <span class="card-icon">📝</span>
+                <h3>Demande de Messe</h3>
+                <p>Transmettez vos intentions de prière (Simples, Neuvaines, Trentains) directement.</p>
+            </a>
+
+            <a href="{{ url_for('admin') }}" class="menu-card">
+                <span class="card-icon">⚙️</span>
+                <h3>Administration</h3>
+                <p>Gérez les paroisses, les diocèses et la configuration globale de la plateforme.</p>
+            </a>
+        </section>
+
+        <div style="margin-top: 60px; padding: 40px; background: #ffffff; border-radius: 20px; text-align: center; border: 1px dashed #cbd5e1;">
+            <p style="color: #64748b; font-weight: 500; margin-bottom: 20px;">Accès réservé aux secrétariats paroissiaux pour la gestion des intentions reçues.</p>
+            <a href="{{ url_for('login_paroisse') }}" style="display: inline-block; background: #10b981; color: white; text-decoration: none; padding: 15px 40px; border-radius: 50px; font-weight: bold; transition: 0.3s; box-shadow: 0 10px 20px rgba(16, 185, 129, 0.2);">
+                <i class="fas fa-key"></i> Accéder à l'Espace Paroisse
+            </a>
+        </div>
+    </main>
+
+</body>
+</html>
+

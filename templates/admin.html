@@ -2,77 +2,189 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Super-Admin - Messes Bénin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super-Admin - MESHORA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --primary: #10b981; --dark: #1e293b; }
-        body { font-family: 'Segoe UI', sans-serif; background: #f1f5f9; padding: 20px; }
-        .card { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .form-box { background: #f8fafc; padding: 20px; border-radius: 10px; border: 1px solid #e2e8f0; margin-bottom: 30px; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; }
-        .btn-add { background: var(--primary); color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th { background: var(--dark); color: white; padding: 12px; text-align: left; }
-        td { padding: 12px; border-bottom: 1px solid #e2e8f0; }
-        .code-badge { background: #e2e8f0; padding: 4px 8px; border-radius: 5px; font-family: monospace; font-weight: bold; }
+        :root { 
+            --primary: #1e293b; 
+            --accent: #10b981;
+            --bg-light: #f8fafc; 
+        }
+
+        body { 
+            font-family: 'Segoe UI', system-ui, sans-serif; 
+            background: #f1f5f9; 
+            padding: 10px; 
+            color: #1e293b; 
+        }
+
+        .card { 
+            max-width: 600px; 
+            margin: auto; 
+            background: white; 
+            padding: 20px; 
+            border-radius: 20px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05); 
+        }
+
+        /* Onglets style Mobile */
+        .tabs { 
+            display: flex; 
+            background: #e2e8f0; 
+            padding: 5px; 
+            border-radius: 12px; 
+            margin-bottom: 25px; 
+        }
+        .tab-item { 
+            flex: 1; 
+            text-align: center; 
+            padding: 10px; 
+            cursor: pointer; 
+            border-radius: 10px; 
+            font-weight: bold; 
+            font-size: 14px;
+            transition: 0.3s;
+            color: #64748b;
+        }
+        .tab-item.active { background: white; color: var(--accent); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+
+        .view-section { display: none; animation: fadeIn 0.3s ease; }
+        .view-active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        h2 { text-align: center; font-weight: 800; color: var(--primary); margin-bottom: 5px; }
+        
+        /* Formulaire */
+        .input-group { margin-bottom: 15px; }
+        label { display: block; font-weight: 600; margin-bottom: 5px; font-size: 0.9rem; color: #475569; }
+        input { 
+            width: 100%; padding: 14px; border: 2px solid #e2e8f0; 
+            border-radius: 12px; box-sizing: border-box; font-size: 16px; 
+        }
+        input:focus { border-color: var(--accent); outline: none; }
+
+        .btn-add { 
+            background: var(--primary); color: white; border: none; 
+            padding: 16px; width: 100%; border-radius: 12px; 
+            font-weight: bold; cursor: pointer; font-size: 16px; 
+        }
+
+        /* Tableau version Mobile (Cartes) */
+        .paroisse-list { margin-top: 20px; }
+        .paroisse-item { 
+            background: #f8fafc; border: 1px solid #e2e8f0; 
+            padding: 15px; border-radius: 15px; margin-bottom: 10px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .paroisse-info b { display: block; color: var(--primary); font-size: 1.1rem; }
+        .paroisse-info span { font-size: 0.8rem; color: #64748b; }
+        
+        .code-badge { 
+            background: #dcfce7; color: #166534; padding: 5px 10px; 
+            border-radius: 8px; font-family: monospace; font-weight: bold;
+        }
+
+        .btn-del { color: #ef4444; background: #fee2e2; padding: 8px; border-radius: 8px; text-decoration: none; font-size: 0.8rem; }
+
+        .nav-back { text-align: center; margin-top: 20px; }
+        .nav-back a { color: #64748b; text-decoration: none; font-size: 0.9rem; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h2>🛠️ Super Administration</h2>
-        <p>Utilisez cet espace pour créer les paroisses et leur attribuer un code d'accès.</p>
-        
-        <div class="form-box">
-            <form action="/admin" method="POST" style="display: flex; flex-direction: column; gap: 15px;">
-    <input type="text" name="nom" placeholder="Nom de la paroisse" required 
-           style="padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px;">
-    <input type="text" name="ville" placeholder="Ville" 
-           style="padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px;">
-    
-    <input type="text" name="adresse" placeholder="Adresse complète" 
-           style="padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px;">
-    
-    <input type="text" name="telephone" placeholder="Téléphone (ex: +229...)" 
-           style="padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px;">
-    
-    <input type="text" name="code" placeholder="Code Secret (ex: SEC-01)" required 
-           style="padding: 12px; border: 1px solid #10b981; border-radius: 8px; background: #f0fdf4;">
-    
-    <button type="submit" style="background: #1e293b; color: white; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
-        ➕ Ajouter la Paroisse
-    </button>
-</form>
-        </div>
 
-        <h3>Liste des paroisses et leurs codes</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Paroisse</th>
-                    <th>Ville</th>
-                    <th>Code Secret</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for p in paroisses %}
-                <tr>
-                    <td><strong>{{ p.nom }}</strong></td>
-                    <td>{{ p.ville }}</td>
-                    <td><span class="code-badge">{{ p.code }}</span></td>
-                    <td><a href="/supprimer_paroisse/{{ p.id }}" style="color: #ef4444; text-decoration: none;">Supprimer</a></td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+<div class="card">
+    <h2>🛠️ Super-Admin</h2>
+    <p style="text-align: center; color: #64748b; font-size: 0.9rem; margin-bottom: 25px;">Gestion de la plateforme MESHORA</p>
+
+    <div class="tabs">
+        <div class="tab-item active" id="tab1" onclick="switchView(1)">
+            <i class="fas fa-plus-circle"></i> Ajouter
+        </div>
+        <div class="tab-item" id="tab2" onclick="switchView(2)">
+            <i class="fas fa-church"></i> Liste
+        </div>
     </div>
+
+    <div id="view-add" class="view-section view-active">
+        <form action="/panneau-secret-meshora-2026" method="POST">
+            <div class="input-group">
+                <label>Nom de la Paroisse :</label>
+                <input type="text" name="nom" placeholder="Ex: St Michel de Cotonou" required>
+            </div>
+            
+            <div style="display: flex; gap: 10px;">
+                <div class="input-group" style="flex: 1;">
+                    <label>Ville :</label>
+                    <input type="text" name="ville" placeholder="Ex: Cotonou">
+                </div>
+                <div class="input-group" style="flex: 1;">
+                    <label>Téléphone :</label>
+                    <input type="text" name="telephone" placeholder="+229...">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Adresse :</label>
+                <input type="text" name="adresse" placeholder="Adresse complète">
+            </div>
+
+            <div class="input-group">
+                <label>Code Secret (Admin Paroisse) :</label>
+                <input type="text" name="code" placeholder="Ex: SEC-01" required 
+                       style="background: #f0fdf4; border-color: var(--accent);">
+            </div>
+
+            <button type="submit" class="btn-add">
+                <i class="fas fa-check"></i> Créer la Paroisse
+            </button>
+        </form>
+    </div>
+
+    <div id="view-list" class="view-section">
+        <div class="paroisse-list">
+            {% for paroisse in paroisses %}
+            <div class="paroisse-item">
+                <div class="paroisse-info">
+                    <b>{{ paroisse.nom }}</b>
+                    <span><i class="fas fa-map-marker-alt"></i> {{ paroisse.ville }}</span>
+                    <div style="margin-top: 5px;">
+                        <span class="code-badge">{{ paroisse.code }}</span>
+                    </div>
+                </div>
+                <div>
+                    <a href="{{ url_for('delete_paroisse', id=paroisse.id) }}" 
+                       class="btn-del" onclick="return confirm('Supprimer cette paroisse ?')">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                </div>
+            </div>
+            {% else %}
+            <p style="text-align: center; color: #94a3b8; padding: 20px;">Aucune paroisse enregistrée.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="nav-back">
+        <a href="/"><i class="fas fa-arrow-left"></i> Retour à l'Accueil</a>
+    </div>
+</div>
+
+<script>
+    function switchView(num) {
+        document.querySelectorAll('.view-section').forEach(v => v.classList.remove('view-active'));
+        document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+        
+        if(num === 1) {
+            document.getElementById('view-add').classList.add('view-active');
+            document.getElementById('tab1').classList.add('active');
+        } else {
+            document.getElementById('view-list').classList.add('view-active');
+            document.getElementById('tab2').classList.add('active');
+        }
+    }
+</script>
+
 </body>
 </html>
-
-
-
-
-
-
-
-
 

@@ -2,65 +2,85 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Reçu de Demande</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reçu MESHORA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root { --primary: #10b981; --dark: #1e293b; --light: #f8fafc; }
+        body { background: #f1f5f9; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        #recu-card { max-width: 400px; width: 100%; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 15px 25px rgba(0,0,0,0.1); }
+        .header { background: var(--primary); color: white; padding: 25px; text-align: center; }
+        .content { padding: 25px; }
+        .info-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.9rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px; }
+        .label { color: #64748b; }
+        .value { font-weight: bold; color: var(--dark); }
+        .details-box { background: var(--light); padding: 15px; border-radius: 12px; border-left: 4px solid var(--primary); margin: 20px 0; }
+        .footer-total { background: var(--dark); color: white; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .btn-download { width: 100%; background: var(--primary); color: white; border: none; padding: 16px; border-radius: 12px; cursor: pointer; font-weight: bold; margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+    </style>
 </head>
-<body style="background: #f1f5f9; display: flex; justify-content: center; padding: 40px;">
+<body>
 
-    <div style="max-width: 450px; width: 100%; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 15px rgba(0,0,0,0.1);">
-        
-        <div style="background: #10b981; color: white; padding: 30px; text-align: center;">
-            <h1 style="margin: 0; font-size: 1.5rem; text-transform: uppercase;">Reçu de Demande</h1>
-            <p style="margin: 10px 0 0; font-size: 0.9rem;">Paroisse : {{ recu.paroisse }}</p>
+    <div id="recu-card">
+        <div class="header">
+            <h1 style="margin:0; letter-spacing: 2px;">MESHORA</h1>
+            <p style="margin:5px 0 0; font-size:0.8rem; opacity:0.9;">{{ recu.paroisse }}</p>
         </div>
 
-        <div style="padding: 30px;">
-            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #666; margin-bottom: 20px;">
-                <span>REF: {{ recu.reference if recu.reference else "MESSE-" ~ range(1000, 9999) | random }}</span>
-                <span>DATE: {{ recu.date_reçu }}</span>
+        <div class="content">
+            <div style="text-align:center; margin-bottom: 15px;">
+                <span style="font-size: 0.7rem; color: #94a3b8; font-weight: bold;">ÉMIS LE : {{ recu.date_recu }}</span>
             </div>
 
-            <p><strong>Donateur :</strong> {{ recu.donateur }}</p>
-
-            <div style="margin: 20px 0;">
-                <h4 style="color: #10b981; border-bottom: 1px solid #f0fdf4; padding-bottom: 5px;">Détails des Intentions</h4>
-                {% if recu.intentions %}
-                    {% for item in recu.intentions %}
-                        <div style="margin-bottom: 10px; font-size: 0.9rem;">
-                            <strong>{{ item.type }} :</strong> <em>{{ item.texte }}</em>
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <p style="font-size: 0.9rem;">Intention : <em>{{ recu.intention }}</em></p>
-                {% endif %}
+            <div class="info-row">
+                <span class="label">Fidèle :</span>
+                <span class="value">{{ recu.donateur }}</span>
             </div>
 
-            <div style="background: #f8fafc; padding: 20px; border-radius: 12px;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                    <span>Offrandes Messes :</span>
-                    <span>{{ recu.offrande }} F</span>
+            <div class="info-row">
+                <span class="label">Type de Messe :</span>
+                <span class="value">{{ recu.type_messe }}</span>
+            </div>
+
+            <div class="details-box">
+                <div style="font-size: 0.75rem; color: var(--primary); font-weight: bold; margin-bottom: 5px; text-transform: uppercase;">
+                    Statut du Paiement
                 </div>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                    <span>Frais Retrait :</span>
-                    <span>0 F</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid #ddd; padding-bottom: 10px;">
-                    <span>Frais Service :</span>
-                    <span>{{ recu.service if recu.service else "50" }} F</span>
-                </div>
-                
-                <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 1.2rem; color: #15803d; margin-top: 10px;">
-                    <span>TOTAL PAYÉ :</span>
-                    <span>{{ recu.total }} FCFA</span>
+                <div style="color: #334155; font-size: 0.9rem;">
+                    Offrande reçue avec succès par la paroisse.
                 </div>
             </div>
 
-            <button onclick="window.print()" style="width: 100%; background: #1e293b; color: white; border: none; padding: 15px; border-radius: 10px; margin-top: 30px; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 10px;">
-                📷 IMPRIMER / CAPTURER
-            </button>
-
-            <a href="/demande" style="display: block; text-align: center; margin-top: 15px; color: #64748b; text-decoration: none; font-size: 0.9rem;">Faire une autre demande</a>
+            <div class="footer-total">
+                <span style="font-size: 0.8rem; opacity: 0.8;">TOTAL PAYÉ :</span>
+                <span style="font-size: 1.2rem; font-weight: 800; color: var(--primary);">{{ recu.total }} FCFA</span>
+            </div>
         </div>
     </div>
 
+    <div style="max-width: 400px; width: 100%;">
+        <button class="btn-download" onclick="downloadRecu()">
+            <i class="fas fa-camera"></i> ENREGISTRER L'IMAGE
+        </button>
+        
+        <a href="/" style="display: block; text-align: center; margin-top: 20px; color: #64748b; text-decoration: none; font-size: 0.9rem;">
+            <i class="fas fa-arrow-left"></i> Retour à l'accueil
+        </a>
+    </div>
+
+    <script>
+        function downloadRecu() {
+            const card = document.querySelector("#recu-card");
+            html2canvas(card, { scale: 3 }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'Recu_Meshora.png';
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+            });
+        }
+    </script>
+
 </body>
 </html>
+

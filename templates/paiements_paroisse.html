@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suivi des Offrandes - {{ paroisse.nom }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; padding: 20px; color: #2c3e50; }
+        .container { max-width: 1100px; margin: auto; background: white; padding: 35px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        
+        .header-area { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f0f2f5; margin-bottom: 30px; padding-bottom: 15px; }
+        h2 { color: #1a237e; margin: 0; font-size: 1.6em; }
+        
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        th { background: #f8fafc; color: #1a237e; padding: 15px; text-align: left; font-size: 0.85em; text-transform: uppercase; border-bottom: 2px solid #edf2f7; }
+        td { padding: 18px 15px; border-bottom: 1px solid #edf2f7; font-size: 0.95em; }
+        tr:hover { background: #f1f5f9; transition: 0.2s; }
+        
+        .badge-money { background: #e8f5e9; color: #1b5e20; padding: 6px 12px; border-radius: 20px; font-weight: 700; border: 1px solid #c8e6c9; }
+        .id-transac { color: #1565c0; font-family: 'Courier New', monospace; font-weight: bold; }
+        
+        .btn-view { display: inline-flex; align-items: center; gap: 8px; background: #fff; color: #1a237e; text-decoration: none; font-weight: 600; border: 2px solid #1a237e; padding: 8px 16px; border-radius: 8px; font-size: 0.85em; transition: 0.3s; }
+        .btn-view:hover { background: #1a237e; color: white; }
+        
+        .back-link { display: inline-flex; align-items: center; gap: 8px; margin-top: 25px; color: #718096; text-decoration: none; font-weight: 500; transition: 0.3s; }
+        .back-link:hover { color: #1a237e; }
+        
+        .empty-state { text-align: center; padding: 50px; color: #a0aec0; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-area">
+        <h2><i class="fas fa-receipt" style="margin-right: 10px;"></i> Historique des Offrandes</h2>
+        <span style="background: #e0e7ff; color: #3730a3; padding: 5px 15px; border-radius: 20px; font-size: 0.8em; font-weight: bold;">{{ paroisse.nom }}</span>
+    </div>
+    
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th><i class="far fa-calendar-alt"></i> Date & Heure</th>
+                    <th><i class="far fa-user"></i> Donateur</th>
+                    <th><i class="fas fa-pray"></i> Type de Messe</th>
+                    <th><i class="fas fa-fingerprint"></i> ID Transaction</th>
+                    <th><i class="fas fa-coins"></i> Montant</th>
+                    <th><i class="fas fa-file-invoice"></i> Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in paiements %}
+                <tr>
+                    <td style="color: #64748b;">{{ p.date_messe }} à {{ p.heure_messe }}</td>
+                    <td><strong>{{ p.donateur }}</strong></td>
+                    <td><span style="color: #475569;">{{ p.type_messe }}</span></td>
+                    <td><span class="id-transac">{{ p.id_transaction }}</span></td>
+                    <td>
+                        <span class="badge-money">
+                            {% if p.type_messe == 'simple' %} 2 050 F
+                            {% elif p.type_messe == 'triduum' %} 6 050 F
+                            {% elif p.type_messe == 'neuvaine' %} 18 050 F
+                            {% elif p.type_messe == 'trentain' %} 60 050 F
+                            {% else %} {{p.montant }} F {% endif %}
+                        </span>
+                    </td>
+                    <td>
+                        {% if p.preuve_paiement %}
+                        <a href="{{ url_for('static', filename='uploads/' + p.preuve_paiement) }}" target="_blank" class="btn-view">
+                            <i class="fas fa-eye"></i> Justificatif
+                        </a>
+                        {% else %}
+                        <span style="color:#e53e3e; font-size: 0.85em;"><i class="fas fa-times-circle"></i> Non fourni</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="empty-state">
+                        <i class="fas fa-inbox fa-3x" style="display: block; margin-bottom: 10px; opacity: 0.3;"></i>
+                        Aucun paiement enregistré pour le moment.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <a href="/espace-paroisse" class="back-link">
+        <i class="fas fa-arrow-left"></i> Retour au panneau de gestion
+    </a>
+</div>
+
+</body>
+</html>

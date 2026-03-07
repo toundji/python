@@ -2,79 +2,240 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Faire une demande de messe</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demande de Messe - MESHORA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: sans-serif; background: #f4f7f6; padding: 20px; }
-        .form-card { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .intention-row { border-left: 5px solid #10b981; padding: 15px; margin-bottom: 20px; border-radius: 5px; background: #f9fafb; }
-        label { display: block; margin-top: 10px; font-weight: bold; color: #374151; }
-        input, select, textarea { width: 100%; padding: 10px; margin-top: 5px; border-radius: 5px; border: 1px solid #d1d5db; box-sizing: border-box; }
-        button { background: #10b981; color: white; padding: 15px; border: none; border-radius: 8px; cursor: pointer; margin-top: 20px; width: 100%; font-size: 18px; font-weight: bold; }
-        h4 { margin: 0; color: #10b981; text-transform: uppercase; font-size: 14px; }
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --secondary: #3e5f6e;
+            --bg-light: #f4f7f6;
+            --text-dark: #2d3748;
+        }
+
+        body { 
+            font-family: 'Segoe UI', system-ui, sans-serif; 
+            background: var(--bg-light); 
+            padding: 10px; 
+            color: #333; 
+            line-height: 1.5;
+        }
+
+        .form-card { 
+            max-width: 600px; 
+            margin: 10px auto; 
+            background: white; 
+            padding: 25px; 
+            border-radius: 20px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1); 
+        }
+
+        .form-step { display: none; animation: fadeIn 0.4s ease; }
+        .form-step-active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .step-indicator::before {
+            content: "";
+            position: absolute;
+            top: 50%; left: 0; right: 0;
+            height: 2px; background: #e2e8f0;
+            z-index: 1; transform: translateY(-50%);
+        }
+
+        .step-circle {
+            width: 35px; height: 35px;
+            background: white; border: 2px solid #e2e8f0;
+            border-radius: 50%; display: flex;
+            align-items: center; justify-content: center;
+            font-weight: bold; z-index: 2; color: #cbd5e1;
+            transition: 0.3s;
+        }
+
+        .step-circle.active { border-color: var(--primary); color: var(--primary); background: #ecfdf5; }
+        .step-circle.finish { background: var(--primary); color: white; border-color: var(--primary); }
+
+        h1 { text-align: center; color: var(--secondary); margin-bottom: 5px; font-weight: 800; font-size: 1.8rem; }
+        
+        .section-title {
+            color: var(--primary-dark);
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .intention-row { 
+            border-left: 4px solid var(--primary); 
+            padding: 15px; 
+            margin-bottom: 20px; 
+            border-radius: 10px; 
+            background: #fcfdfe; 
+            border: 1px solid #edf2f7;
+        }
+
+        label { display: block; margin-top: 15px; font-weight: 600; color: var(--text-dark); margin-bottom: 5px;}
+        
+        input, select, textarea { 
+            width: 100%; padding: 14px; border-radius: 12px; 
+            border: 2px solid #edf2f7; box-sizing: border-box; 
+            font-size: 16px; transition: 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1); }
+
+        .btn-group { display: flex; gap: 10px; margin-top: 25px; }
+        .btn-next, .btn-submit { background: var(--primary); color: white; flex: 2; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; padding: 16px; }
+        .btn-prev { background: #edf2f7; color: #718096; flex: 1; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; padding: 16px; }
+
+        .btn-next:hover, .btn-submit:hover { background: var(--primary-dark); }
+        .limit-info { font-size: 12px; margin-top: 5px; font-weight: 600; color: #718096; }
+        .special-option { background-color: #ecfdf5 !important; color: var(--primary-dark) !important; font-weight: bold; }
+
+        @media (max-width: 480px) {
+            .flex-mobile { flex-direction: column; gap: 0 !important; }
+        }
     </style>
 </head>
 <body>
 
 <div class="form-card">
-    <h1>Demande de Messe</h1>
+    <h1>MESHORA</h1>
+    <p style="text-align: center; color: #718096; margin-bottom: 25px; font-size: 0.9rem;">Demande d'intention pas à pas</p>
+    
+    <div class="step-indicator">
+        <div class="step-circle active" id="circle-1">1</div>
+        <div class="step-circle" id="circle-2">2</div>
+    </div>
+
     <form method="POST" id="messeForm">
-        <label>Votre Nom et Prénom :</label>
-        <input type="text" name="nom" required placeholder="Ex: Jean BON">
+        
+        <div class="form-step form-step-active" id="step-1">
+            <div class="section-title">1. Vos Informations</div>
+            
+            <label>Votre Nom et Prénom :</label>
+            <input type="text" name="nom" id="nom_client" required placeholder="Ex: M. Jean KOLA">
 
-        <label>Choisir la Paroisse :</label>
-        <select name="paroisse_id" id="paroisse_select" required onchange="genererChamps()">
-            <option value="">-- sélectionner la paroisse --</option>
-            {% for p in paroisses %}
-            <option value="{{ p.id }}">{{ p.nom }}</option>
-            {% endfor %}
-        </select>
+            <label>Votre Numéro (WhatsApp) :</label>
+            <input type="tel" name="telephone" id="tel_client" required placeholder="Ex: +229 00 00 00 00">
 
-        <label>Type de Messe :</label>
-        <select name="type_messe" id="type_messe" required onchange="genererChamps()">
-            <option value="simple">Messe Simple (2000 F)</option>
-            <option value="triduum">Triduum (3 jours - 6000 F)</option>
-            <option value="neuvaine">Neuvaine (9 jours - 18000 F)</option>
-            <option value="trentain">Trentain (30 jours - 60000 F)</option>
-        </select>
+            <label>Choisir la Paroisse :</label>
+            <select name="paroisse_id" id="paroisse_select" required onchange="verifierOffreSpeciale(); genererChamps();">
+                <option value="">-- Sélectionnez votre paroisse --</option>
+                {% for p in paroisses %}
+                <option value="{{ p.id }}" data-special="{{ p.evenement_special or '' }}">{{ p.nom }} ({{ p.ville }})</option>
+                {% endfor %}
+            </select>
 
-        <div id="intentions_container" style="margin-top: 20px;">
+            <label>Type de Messe :</label>
+            <select name="type_messe" id="type_messe" required onchange="genererChamps()">
+                <option value="Simple">Messe Simple (2000 F)</option>
+                <option value="Triduum">Triduum (3 jours - 6000 F)</option>
+                <option value="Neuvaine">Neuvaine (9 jours - 18000 F)</option>
+                <option value="Trentain">Trentain (30 jours - 60000 F)</option>
+                <option value="special" id="option_speciale" class="special-option" style="display: none;">🌟 OFFRE SPÉCIALE (500 F)</option>
+            </select>
+
+            <div class="btn-group">
+                <button type="button" class="btn-next" onclick="goToStep(2)">Suivant <i class="fas fa-chevron-right"></i></button>
             </div>
+        </div>
 
-        <button type="submit">Valider la demande et payer</button>
+        <div class="form-step" id="step-2">
+            <div class="section-title">2. Détails de l'intention</div>
+            
+            <label>Nature de l'Intention :</label>
+            <select name="nature" id="nature_select" onchange="adapterTypeIntention()">
+                <option value="Action de Grâce">🕯️ Action de Grâce (30 mots)</option>
+                <option value="Repos de l'âme">✝️ Repos de l'âme (25 mots)</option>
+                <option value="Autre">✨ Autre Intention / Spéciale (30 mots)</option>
+            </select>
+
+            <div id="intentions_container"></div>
+
+            <div class="btn-group">
+                <button type="button" class="btn-prev" onclick="goToStep(1)">Retour</button>
+                <button type="submit" class="btn-submit" id="btn_envoyer">
+                    <i class="fas fa-paper-plane"></i> Envoyer la Demande
+                </button>
+            </div>
+        </div>
     </form>
 </div>
 
 <script>
     const dataHoraires = {{ paroisses_data | tojson | safe }};
 
+    function goToStep(stepNumber) {
+        if (stepNumber === 2 && (document.getElementById('nom_client').value === "" || document.getElementById('tel_client').value === "")) {
+            alert("Veuillez remplir votre nom et votre téléphone."); return;
+        }
+        
+        document.querySelectorAll('.form-step').forEach(step => step.classList.remove('form-step-active'));
+        document.getElementById('step-' + stepNumber).classList.add('form-step-active');
+        
+        document.querySelectorAll('.step-circle').forEach((circle, index) => {
+            if (index + 1 < stepNumber) circle.className = "step-circle finish";
+            else if (index + 1 === stepNumber) circle.className = "step-circle active";
+            else circle.className = "step-circle";
+        });
+    }
+
+    function verifierOffreSpeciale() {
+        const selectP = document.getElementById('paroisse_select');
+        const optSpeciale = document.getElementById('option_speciale');
+        const selected = selectP.options[selectP.selectedIndex];
+        
+        if (selected && selected.value) {
+            const nomSpecial = selected.getAttribute('data-special');
+            if (nomSpecial && nomSpecial.trim() !== "") {
+                optSpeciale.style.display = "block";
+                optSpeciale.innerText = "🌟 " + nomSpecial + " (500 F)";
+            } else {
+                optSpeciale.style.display = "none";
+                if(document.getElementById('type_messe').value === 'special') document.getElementById('type_messe').value = 'Simple';
+            }
+        }
+    }
+
     function genererChamps() {
         const typeM = document.getElementById('type_messe').value;
         const container = document.getElementById('intentions_container');
-        const pId = document.getElementById('paroisse_select').value;
-        
         let nb = 1;
-        if(typeM === 'triduum') nb = 3;
-        if(typeM === 'neuvaine') nb = 9;
-        if(typeM === 'trentain') nb = 30;
+        if(typeM === 'Triduum') nb = 3;
+        else if(typeM === 'Neuvaine') nb = 9;
+        else if(typeM === 'Trentain') nb = 30;
 
-        container.innerHTML = `<h3 style="color:#059669">Détails pour les ${nb} jour(s)</h3>`;
+        container.innerHTML = `<p style="text-align:center; font-weight:bold; color:#718096;">Détails pour ${nb} jour(s)</p>`;
 
         for (let i = 1; i <= nb; i++) {
             const row = document.createElement('div');
             row.className = 'intention-row';
-            // IMPORTANT : name="date_${i}" permet d'envoyer 30 variables différentes à Python
             row.innerHTML = `
-                <h4>Jour ${i}</h4>
-                <label>Date :</label>
-                <input type="date" name="date_${i}" id="date_${i}" onchange="chargerH(${i})" required>
-                
-                <label>Heure :</label>
-                <select name="heure_${i}" id="heure_${i}" onchange="checkTime(${i})" required>
-                    <option value="">-- choisir date d'abord --</option>
-                </select>
-
-                <label>Intention (Jour ${i}) :</label>
-                <textarea name="texte_${i}" rows="2" placeholder="Ex: Action de grâce..."></textarea>
+                <h4 style="color:var(--primary); margin-top:0; font-size:0.9rem;">JOUR ${i}</h4>
+                <div style="display: flex; gap: 10px;" class="flex-mobile">
+                    <div style="flex: 1;">
+                        <label style="font-size:0.8rem;">Date :</label>
+                        <input type="date" name="date_${i}" id="date_${i}" onchange="chargerH(${i})" required min="${new Date().toISOString().split('T')[0]}">
+                    </div>
+                    <div style="flex: 1;">
+                        <label style="font-size:0.8rem;">Heure :</label>
+                        <select name="heure_${i}" id="heure_${i}" onchange="checkTime(${i})" required>
+                            <option value="">-- Heure --</option>
+                        </select>
+                    </div>
+                </div>
+                <label style="font-size:0.8rem;">Texte :</label>
+                <textarea name="texte_${i}" id="texte_${i}" rows="3" oninput="controlerSaisie(${i})" required placeholder="Votre intention..."></textarea>
+                <div id="info_${i}" class="limit-info"></div>
             `;
             container.appendChild(row);
         }
@@ -82,46 +243,65 @@
 
     function chargerH(idx) {
         const pId = document.getElementById('paroisse_select').value;
-        const dIn = document.getElementById('date_' + idx);
-        const hSel = document.getElementById('heure_' + idx);
-
-        if (!pId) { alert("Choisissez une paroisse"); dIn.value=""; return; }
-
-        if (dIn.value) {
-            const jour = new Date(dIn.value).getDay();
-            const chaine = dataHoraires[pId] ? dataHoraires[pId][jour.toString()] : null;
-            hSel.innerHTML = '<option value="">-- Heure --</option>';
-
-            if (chaine && chaine !== "À préciser" && chaine !== "Pas de messe") {
-                chaine.split(',').forEach(h => {
-                    let o = document.createElement('option');
-                    o.value = h.trim(); o.innerHTML = h.trim();
-                    hSel.appendChild(o);
-                });
-            } else {
-                hSel.innerHTML = '<option value="">Pas de messe</option>';
-            }
+        const dVal = document.getElementById('date_' + idx).value;
+        const selectH = document.getElementById('heure_' + idx);
+        if (!pId || !dVal) return;
+        const jourSemaine = new Date(dVal).getDay().toString();
+        const heureBrute = dataHoraires[pId] ? dataHoraires[pId][jourSemaine] : "À préciser";
+        selectH.innerHTML = '<option value="">-- Heure --</option>';
+        if (heureBrute && heureBrute !== "À préciser" && heureBrute !== "Pas de messe") {
+            heureBrute.split(/[,; ]+/).forEach(h => {
+                if(h.trim()) selectH.innerHTML += `<option value="${h.trim()}">${h.trim()}</option>`;
+            });
         }
+    }
+
+    function controlerSaisie(idx) {
+        const nature = document.getElementById('nature_select').value;
+        const field = document.getElementById('texte_' + idx);
+        const info = document.getElementById('info_' + idx);
+        
+        // On définit la limite selon le texte de l'option choisie
+        let limite = (nature === "Repos de l'âme") ? 25 : 30;
+        
+        let texte = field.value;
+        let mots = texte.trim().split(/\s+/).filter(m => m.length > 0);
+        
+        if (mots.length > limite) {
+            // Recréer le texte avec seulement les X premiers mots
+            field.value = mots.slice(0, limite).join(" ");
+            mots = mots.slice(0, limite);
+            info.style.color = "red";
+        } else {
+            info.style.color = "#718096";
+        }
+        
+        info.innerText = (limite - mots.length) + " mots restants sur " + limite;
     }
 
     function checkTime(idx) {
-        const dIn = document.getElementById('date_' + idx);
-        const hSel = document.getElementById('heure_' + idx);
-        if (dIn.value && hSel.value) {
+        const dIn = document.getElementById('date_' + idx).value;
+        const hSel = document.getElementById('heure_' + idx).value;
+        if (dIn && hSel && hSel !== "À préciser") {
             const now = new Date();
-            const hClean = hSel.value.replace('h', ':').replace('H', ':');
-            const target = new Date(dIn.value + 'T' + hClean);
-            if (target - now < 7200000) {
-                alert("⚠️ Erreur Jour " + idx + " : Le délai de 2h n'est pas respecté.");
-                hSel.value = "";
+            const timePart = hSel.toLowerCase().replace('h', ':');
+            if (new Date(dIn + 'T' + timePart) - now < 7200000) {
+                alert("⚠️ Délai : Soumission 2h minimum avant la messe.");
+                document.getElementById('heure_' + idx).value = "";
             }
         }
     }
 
-    // Initialisation
-    window.onload = genererChamps;
-</script>
+    function adapterTypeIntention() {
+        // Recalcule la limite pour tous les champs texte générés
+        document.querySelectorAll('textarea[id^="texte_"]').forEach((textarea) => {
+            const idx = textarea.id.split('_')[1];
+            controlerSaisie(idx);
+        });
+    }
 
+    window.onload = function() { genererChamps(); };
+</script>
 </body>
 </html>
 

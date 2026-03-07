@@ -2,53 +2,139 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <title>Paroisses - Messes Bénin</title>
-</head>
-<body>
-    <div class="container">
-        <header class="home-hero">
-            <h1>⛪ Choisissez votre Paroisse</h1>
-        </header>
-<div style="max-width: 500px; margin: 20px auto 30px; padding: 0 15px;">
-    <input type="text" id="paroisseInput" onkeyup="filtrerListe()" 
-           placeholder="🔍 Tapez le nom d'une paroisse..." 
-           style="width: 100%; padding: 12px 20px; border-radius: 25px; border: 2px solid #3b82f6; outline: none; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-</div>
-<script>
-function filtrerListe() {
-    let input = document.getElementById('paroisseInput').value.toLowerCase();
-    // On cible vos cartes de paroisses
-    let cards = document.getElementsByClassName('paroisse-card'); 
+    <title>Paroisses - MESHORA</title>
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
 
-    for (let i = 0; i < cards.length; i++) {
-        // On récupère le nom de la paroisse dans le <h3> de la carte
-        let nomParoisse = cards[i].querySelector('h3').innerText.toLowerCase();
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="{{ url_for('static', filename='logo.png') }}">
+
+<link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MESHORA">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+</head>
+<body style="background-color: #f8fafc; margin: 0; font-family: 'Segoe UI', system-ui, sans-serif;">
+
+    <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 20px;">
         
-        // Si le nom correspond à la recherche, on affiche, sinon on cache
-        if (nomParoisse.includes(input)) {
-            cards[i].style.display = "";
-        } else {
-            cards[i].style.display = "none";
-        }
-    }
-}
-</script>
-        <div class="paroisses-grid">
+        <header class="home-hero" style="text-align: center; padding: 40px 0;">
+            <h1 style="color: #1e3a8a; font-size: 2.5rem; margin-bottom: 10px;">⛪ MESHORA</h1>
+            <p style="color: #64748b; font-size: 1.1rem;">Choisissez votre Paroisse pour voir les horaires de messe</p>
+        </header>
+
+        <div style="max-width: 550px; margin: 0 auto 40px; padding: 0 15px;">
+            <input type="text" id="paroisseInput" onkeyup="filtrerListe()" 
+                   placeholder="🔍 Rechercher une paroisse ou une ville..." 
+                   style="width: 100%; padding: 15px 25px; border-radius: 50px; border: 2px solid #3b82f6; outline: none; box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.1); font-size: 1rem; transition: 0.3s;">
+        </div>
+
+        <div class="paroisses-grid" id="paroisses-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; justify-content: center;">
+            
             {% for p in paroisses %}
-            <a href="/paroisse/{{ p.id }}" class="card-link">
-                <div class="selection-card">
-                    <div class="card-icon">🏛️</div>
-                    <h3>{{ p.nom }}</h3>
-                    <p>📍 {{ p.ville }}</p>
-                    <span style="color: #3498db; font-weight: bold;">Voir les horaires →</span>
-                </div>
-            </a>
+            <div class="paroisse-card" style="background: white; border-radius: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #f1f5f9; transition: transform 0.3s ease, box-shadow 0.3s ease; overflow: hidden;">
+                
+                <a href="/paroisse/{{ p.id }}" style="text-decoration: none; color: inherit; display: block; padding: 25px;">
+                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
+                        <div style="width: 50px; height: 50px; background: #eff6ff; color: #1e3a8a; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                            🏛️
+                        </div>
+                        <div style="flex: 1;">
+                            <h3 style="margin: 0; color: #1e293b; font-size: 1.1rem; font-weight: 700;">{{ p.nom }}</h3>
+                            <p style="margin: 3px 0 0; color: #64748b; font-size: 0.85rem; font-weight: 600;">📍 {{ p.ville }}</p>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f1f5f9; padding-top: 15px; margin-top: 10px;">
+                        <span style="color: #3b82f6; font-weight: 700; font-size: 0.9rem;">Voir les horaires</span>
+                        <span style="background: #eff6ff; color: #3b82f6; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold;">→</span>
+                    </div>
+                </a>
+
+            </div>
             {% endfor %}
         </div>
     </div>
+
+    <script>
+    function filtrerListe() {
+        let input = document.getElementById('paroisseInput').value.toLowerCase();
+        let cards = document.getElementsByClassName('paroisse-card'); 
+
+        for (let i = 0; i < cards.length; i++) {
+            let nomParoisse = cards[i].querySelector('h3').innerText.toLowerCase();
+            let villeParoisse = cards[i].querySelector('p').innerText.toLowerCase();
+            
+            // Recherche améliorée sur le nom ET la ville
+            if (nomParoisse.includes(input) || villeParoisse.includes(input)) {
+                cards[i].style.display = "";
+            } else {
+                cards[i].style.display = "none";
+            }
+        }
+    }
+    </script>
+
+    <style>
+        .paroisse-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+        }
+    </style>
+    <script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/static/sw.js');
+    });
+  }
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      // On pointe vers /sw.js et non /static/sw.js
+      navigator.serviceWorker.register('/sw.js')
+      .then(reg => console.log('MESHORA Ready!'))
+      .catch(err => console.error('Erreur:', err));
+    });
+  }
+</script>
+<style>
+    .form-step { display: none; transition: 0.3s; }
+    .form-step.active { display: block; }
+
+    /* On agrandit tout pour les doigts sur mobile */
+    input, select, textarea {
+        width: 100%;
+        padding: 15px;
+        margin: 10px 0;
+        font-size: 16px; /* Empêche le zoom automatique sur iPhone */
+        border-radius: 10px;
+        border: 1px solid #ddd;
+    }
+
+    .btn-next, .btn-submit {
+        background-color: #00b894;
+        color: white;
+        padding: 15px;
+        border: none;
+        width: 100%;
+        border-radius: 10px;
+        font-weight: bold;
+    }
+
+    .btn-prev {
+        background-color: #636e72;
+        color: white;
+        padding: 15px;
+        width: 100%;
+        margin-top: 10px;
+        border-radius: 10px;
+    }
+</style>
 </body>
 </html>
-
-
-

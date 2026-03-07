@@ -294,3 +294,112 @@ textarea {
         }
     }
 }
+
+/* --- OPTIMISATION TABLEAUX ET FORMULAIRES MOBILE --- */
+@media (max-width: 768px) {
+
+    /* Transforme le tableau en liste de cartes */
+    table,
+    thead,
+    tbody,
+    th,
+    td,
+    tr {
+        display: block !important;
+    }
+
+    thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+
+    tr {
+        border: 1px solid #ddd;
+        margin-bottom: 15px;
+        padding: 10px;
+        border-radius: 12px;
+        background: white;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    td {
+        border: none !important;
+        position: relative;
+        padding-left: 50% !important;
+        text-align: right !important;
+        margin-bottom: 8px;
+        font-size: 15px;
+    }
+
+    td:before {
+        position: absolute;
+        left: 10px;
+        width: 45%;
+        white-space: nowrap;
+        font-weight: bold;
+        content: attr(data-label);
+        text-align: left;
+        color: #3e5f6e;
+    }
+
+    /* Agrandit les boutons pour les doigts */
+    .btn,
+    button,
+    input,
+    select,
+    textarea {
+        width: 100% !important;
+        height: 50px !important;
+        font-size: 16px !important;
+        margin-bottom: 10px;
+    }
+}
+
+/* --- FORCE LE TABLEAU EN CARTES POUR MOBILE --- */
+@media (max-width: 768px) {
+
+    /* Force le conteneur et le tableau à ne pas dépasser 100% */
+    .container,
+    table {
+        width: 100% !important;
+        max-width: 100vw !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-sizing: border-box !important;
+        display: block !important;
+    }
+
+    /* Transforme les lignes en cartes indépendantes */
+    tbody tr {
+        display: flex !important;
+        flex-direction: column !important;
+        margin-bottom: 20px !important;
+        border: 2px solid #3e5f6e !important;
+        border-radius: 8px !important;
+        background: #fff !important;
+        width: 95% !important;
+        /* Laisse un petit espace sur les côtés */
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+
+    /* Aligne le texte à l'intérieur des cartes */
+    td {
+        display: flex !important;
+        justify-content: space-between !important;
+        padding: 10px !important;
+        border-bottom: 1px solid #eee !important;
+        text-align: right !important;
+        font-size: 14px !important;
+    }
+
+    /* Affiche l'étiquette (Paroisse, Ville...) à gauche */
+    td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        text-align: left;
+        color: #3e5f6e;
+        padding-right: 10px;
+    }
+}

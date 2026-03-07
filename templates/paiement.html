@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paiement Sécurisé - MESHORA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --primary: #1a237e; --accent: #ff9800; --success: #2e7d32; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 450px; margin: auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        
+        .header { text-align: center; margin-bottom: 25px; }
+        .header h2 { color: var(--primary); margin-bottom: 5px; font-size: 1.5em; }
+        
+        .price-box { background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); color: var(--success); padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 25px; border: 1px solid #a5d6a7; }
+        .price-box big { font-size: 1.8em; font-weight: 800; display: block; }
+        
+        .info-paiement { background: #fff8e1; padding: 20px; border-radius: 12px; margin-bottom: 25px; border-left: 6px solid var(--accent); }
+        
+        .flash { background: #ffebee; color: #c62828; padding: 12px; border-radius: 8px; margin-bottom: 20px; text-align: center; border: 1px solid #ffcdd2; font-weight: 500; }
+        
+        label { font-weight: 600; font-size: 0.9em; color: #555; display: block; margin-bottom: 8px; }
+        input[type="text"], input[type="file"], select { width: 100%; padding: 14px; border: 1px solid #ccd1d9; border-radius: 10px; box-sizing: border-box; font-size: 1em; transition: 0.3s; }
+        input:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.1); }
+        
+        .btn-submit { width: 100%; background: var(--primary); color: white; padding: 16px; border: none; border-radius: 10px; cursor: pointer; margin-top: 20px; font-size: 1.1em; font-weight: 600; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .btn-submit:hover { background: #0d1440; transform: translateY(-2px); }
+        
+        #display_num { display:none; margin-top:15px; padding:15px; background: white; border: 2px dashed var(--accent); text-align: center; border-radius: 10px; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+<div class="container">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}{% for m in messages %}<div class="flash"><i class="fas fa-exclamation-circle"></i> {{ m }}</div>{% endfor %}{% endif %}
+    {% endwith %}
+    
+    <div class="header">
+        <i class="fas fa-church fa-2x" style="color: var(--primary); margin-bottom: 10px;"></i>
+        <h2>{{ paroisse.nom }}</h2>
+        <p style="color: #666; font-size: 0.9em;">Finalisation de votre offrande</p>
+    </div>
+
+    <div class="price-box">
+        <small>Montant total à régler :</small>
+        <big>{{ prix + 50 }} FCFA</big>
+        <small style="opacity: 0.8;">(Messe: {{ prix }} F + Service: 50 F)</small>
+    </div>
+
+    <div class="info-paiement">
+        <label><i class="fas fa-mobile-alt"></i> 1. Choisissez votre réseau :</label>
+        <select id="reseau_select" onchange="majNumero()">
+            <option value="">-- Sélectionner un opérateur --</option>
+            {% if paroisse.num_mtn %}<option value="{{ paroisse.num_mtn }}">MTN Mobile Money</option>{% endif %}
+            {% if paroisse.num_moov %}<option value="{{ paroisse.num_moov }}">Moov Flooz</option>{% endif %}
+            {% if paroisse.num_celtiis %}<option value="{{ paroisse.num_celtiis }}">Celtiis Cash</option>{% endif %}
+        </select>
+        
+        <div id="display_num">
+            <span style="font-size: 0.85em; color: #666; text-transform: uppercase; letter-spacing: 1px;">Numéro destinataire</span><br>
+            <strong id="num_label" style="font-size: 1.6em; color: #e65100;"></strong>
+            <p style="font-size: 0.8em; margin: 5px 0 0; color: #888;">Faites le transfert vers ce numéro avant de continuer.</p>
+        </div>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data">
+        <label><i class="fas fa-key"></i> 2. ID de Transaction :</label>
+        <input type="text" name="id_transaction" placeholder="Entrez le code reçu par SMS" required>
+        
+        <label style="margin-top:15px;"><i class="fas fa-camera"></i> 3. Capture d'écran :</label>
+        <input type="file" name="preuve_paiement" accept="image/*" required>
+        
+        <button type="submit" class="btn-submit">
+            <i class="fas fa-check-circle"></i> Confirmer mon offrande
+        </button>
+    </form>
+</div>
+
+<script>
+function majNumero() {
+    const val = document.getElementById('reseau_select').value;
+    const box = document.getElementById('display_num');
+    const label = document.getElementById('num_label');
+    if(val) { 
+        label.innerText = val; 
+        box.style.display = 'block'; 
+    } else { 
+        box.style.display = 'none'; 
+    }
+}
+</script>
+</body>
+</html>

@@ -4,67 +4,190 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestion - {{ paroisse.nom }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f8fafc; padding: 20px; color: #334155; }
-        .container { max-width: 650px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        h2 { text-align: center; color: #1e293b; margin-bottom: 25px; }
-        .section { margin-bottom: 20px; padding: 20px; border: 1px solid #e2e8f0; border-radius: 10px; }
-        .section-annonce { background-color: #fffbeb; border-color: #fde68a; }
-        /* Nouvelle section pour les intentions */
-        .section-intentions { background-color: #f0f9ff; border-color: #bae6fd; text-align: center; }
-        label { font-weight: bold; display: block; margin-bottom: 8px; font-size: 0.95rem; }
-        textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; font-size: 1rem; }
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --secondary: #0284c7;
+            --bg-body: #f1f5f9;
+        }
+
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg-body); padding: 10px; color: #1e293b; }
+        
+        .container { 
+            max-width: 600px; 
+            margin: auto; 
+            background: white; 
+            padding: 20px; 
+            border-radius: 20px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05); 
+        }
+
+        /* Barre de navigation rapide */
+        .top-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; }
+        .nav-card { 
+            padding: 15px; border-radius: 12px; text-decoration: none; 
+            text-align: center; color: white; font-weight: bold; transition: 0.3s;
+        }
+
+        /* Étapes */
+        .form-step { display: none; animation: slideIn 0.3s ease-out; }
+        .form-step-active { display: block; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+
+        /* Indicateurs */
+        .step-bar { display: flex; justify-content: space-between; margin-bottom: 25px; background: #e2e8f0; border-radius: 10px; padding: 5px; }
+        .step-item { flex: 1; text-align: center; padding: 8px; font-size: 12px; font-weight: bold; color: #94a3b8; cursor: pointer; border-radius: 8px; }
+        .step-item.active { background: white; color: var(--primary); shadow: 0 2px 4px rgba(0,0,0,0.1); }
+
+        .section-title { font-size: 1.2rem; font-weight: 800; color: #334155; margin-bottom: 20px; border-left: 4px solid var(--primary); padding-left: 10px; }
+        
+        label { display: block; margin-top: 15px; font-weight: 600; font-size: 0.9rem; }
+        input, textarea { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 10px; margin-top: 5px; box-sizing: border-box; font-size: 16px; }
+        input:focus { border-color: var(--primary); outline: none; }
+
+        .btn-main { background: var(--primary); color: white; border: none; padding: 15px; border-radius: 12px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 20px; }
+        .btn-next { background: var(--secondary); color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; flex: 2; font-weight: bold; }
+        .btn-prev { background: #e2e8f0; color: #64748b; border: none; padding: 12px; border-radius: 10px; cursor: pointer; flex: 1; font-weight: bold; }
+        
+        .flex-btns { display: flex; gap: 10px; margin-top: 20px; }
+
         .grid-horaires { display: grid; grid-template-columns: 1fr 2fr; gap: 10px; align-items: center; }
-        input[type="text"] { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; }
-        .btn { background-color: #10b981; color: white; padding: 15px; border: none; border-radius: 8px; width: 100%; cursor: pointer; font-weight: bold; font-size: 1.1rem; margin-top: 10px; transition: background 0.2s; text-decoration: none; display: inline-block; }
-        .btn:hover { background-color: #059669; }
-        /* Style pour le bouton spécifique aux intentions */
-        .btn-blue { background-color: #0284c7; margin-top: 5px; }
-        .btn-blue:hover { background-color: #0369a1; }
+        
+        .alert { padding: 15px; background: #dcfce7; color: #166534; border-radius: 10px; margin-bottom: 15px; font-size: 0.9rem; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Espace de Gestion : {{ paroisse.nom }}</h2>
-    
-    <div class="section section-intentions">
-        <label>📋 Tirage des intentions :</label>
-        <p style="font-size: 0.9rem; color: #64748b; margin-bottom: 15px;">Consulter, filtrer par date et imprimer les intentions reçues.</p>
-        <a href="{{ url_for('gestion_intentions', paroisse_id=paroisse.id) }}" class="btn btn-blue">
-            VOIR ET IMPRIMER LES INTENTIONS
+    <h2 style="text-align:center; margin-bottom:5px;">{{ paroisse.nom }}</h2>
+    <p style="text-align:center; color:#64748b; font-size:0.8rem; margin-bottom:20px;">Tableau de bord Administration</p>
+
+    <div class="top-nav">
+        <a href="{{ url_for('gestion_intentions', paroisse_id=paroisse.id) }}" class="nav-card" style="background:var(--secondary);">
+            <i class="fas fa-list"></i><br>Intentions
         </a>
+        <a href="{{ url_for('gestion_paiements', paroisse_id=paroisse.id) }}" class="nav-card" style="background:var(--primary);">
+            <i class="fas fa-wallet"></i><br>Paiements
+        </a>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert"><i class="fas fa-check-circle"></i> {{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="step-bar">
+        <div class="step-item active" id="dot-1" onclick="showStep(1)">Infos</div>
+        <div class="step-item" id="dot-2" onclick="showStep(2)">Messes</div>
+        <div class="step-item" id="dot-3" onclick="showStep(3)">Paiement</div>
+        <div class="step-item" id="dot-4" onclick="showStep(4)">Sécurité</div>
     </div>
 
     <form action="/modifier-paroisse/{{ paroisse.id }}" method="POST">
         
-        <div class="section section-annonce">
-            <label>📢 Annonces paroissiales :</label>
-            <textarea name="annonce" rows="4" placeholder="Saisissez les annonces ici...">{{ paroisse.annonce }}</textarea>
+        <div class="form-step form-step-active" id="step-1">
+            <div class="section-title">Annonces & Contact</div>
+            <label>📢 Annonces de la semaine :</label>
+            <textarea name="annonce" rows="4" placeholder="Infos à afficher aux fidèles...">{{ paroisse.annonce }}</textarea>
+            
+            <label>📞 Téléphone Paroisse :</label>
+            <input type="text" name="telephone" value="{{ paroisse.telephone }}">
+            
+            <div class="flex-btns">
+                <button type="button" class="btn-next" onclick="showStep(2)">Suivant : Horaires <i class="fas fa-arrow-right"></i></button>
+            </div>
         </div>
 
-        <div class="section">
-            <label>⏰ Horaires des messes :</label>
+        <div class="form-step" id="step-2">
+            <div class="section-title">Horaires des Messes</div>
+            <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 15px;">Séparez les heures par des virgules (ex: 07h, 09h, 19h).</p>
             <div class="grid-horaires">
-                {% for jour in ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'] %}
-                    <span>{{ jour|capitalize }} :</span>
-                    <input type="text" name="h_{{ jour }}" value="{{ getattr(paroisse, 'h_' ~ jour) }}">
+                {% for j in ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'] %}
+                <span style="text-transform: capitalize; font-weight: 600;">{{ j }} :</span>
+                <input type="text" name="h_{{ j }}" value="{{ getattr(paroisse, 'h_' ~ j) or '' }}" placeholder="Pas de messe">
                 {% endfor %}
             </div>
-            
-            <div style="margin-top: 20px;">
-                <label>📞 Téléphone de la paroisse :</label>
-                <input type="text" name="telephone" value="{{ paroisse.telephone }}">
+            <div class="flex-btns">
+                <button type="button" class="btn-prev" onclick="showStep(1)">Retour</button>
+                <button type="button" class="btn-next" onclick="showStep(3)">Suivant : Paiement</button>
             </div>
         </div>
 
-        <button type="submit" class="btn">ENREGISTRER LES MODIFICATIONS</button>
+        <div class="form-step" id="step-3">
+            <div class="section-title">Configuration Paiements</div>
+            
+            <div style="background:#f8fafc; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
+                <label><i class="fas fa-phone-alt"></i> Numéro MTN :</label>
+                <input type="text" name="num_mtn" value="{{ paroisse.num_mtn or '' }}">
+                <label><i class="fas fa-phone-alt"></i> Numéro Moov :</label>
+                <input type="text" name="num_moov" value="{{ paroisse.num_moov or '' }}">
+                <label><i class="fas fa-phone-alt"></i> Numéro Celtiis :</label>
+                <input type="text" name="num_celtiis" value="{{ paroisse.num_celtiis or '' }}">
+            </div>
+
+            <div style="background: #ecfdf5; padding: 15px; border-radius: 12px; border: 1px solid #10b981;">
+                <h4 style="margin:0; color:#059669;"><i class="fas fa-star"></i> Offre Spéciale (500 F)</h4>
+                <label>Nom de l'événement :</label>
+                <input type="text" name="evenement_special" value="{{ paroisse.evenement_special or '' }}" placeholder="Ex: Fête Patronale">
+                <label>Date limite :</label>
+                <input type="date" name="date_special" value="{{ paroisse.date_special.strftime('%Y-%m-%d') if paroisse.date_special else '' }}">
+            </div>
+
+            <button type="submit" class="btn-main">SAUVEGARDER LES MODIFICATIONS</button>
+            <div class="flex-btns">
+                <button type="button" class="btn-prev" onclick="showStep(2)">Retour</button>
+                <button type="button" class="btn-next" onclick="showStep(4)">Sécurité <i class="fas fa-lock"></i></button>
+            </div>
+        </div>
     </form>
-    
-    <p style="text-align: center; margin-top: 20px;">
-        <a href="/" style="color: #94a3b8; text-decoration: none; font-size: 0.9rem;">← Annuler et revenir à l'accueil</a>
-    </p>
+
+    <div class="form-step" id="step-4">
+        <div class="section-title">Sécurité du Compte</div>
+        <form action="{{ url_for('changer_code_paroisse', id=paroisse.id) }}" method="POST">
+            <label>Ancien Code Secret :</label>
+            <input type="password" name="ancien_code" required>
+            
+            <label>Nouveau Code :</label>
+            <input type="password" name="nouveau_code" required>
+            
+            <label>Confirmer le Code :</label>
+            <input type="password" name="confirmation_code" required>
+            
+            <button type="submit" class="btn-main" style="background:#ef4444;">METTRE À JOUR LE CODE</button>
+        </form>
+        <div class="flex-btns">
+            <button type="button" class="btn-prev" onclick="showStep(3)">Retour</button>
+        </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 30px;">
+        <a href="{{ url_for('index') }}" style="color:#64748b; text-decoration:none; font-size:0.9rem;">
+            <i class="fas fa-home"></i> Quitter vers l'accueil
+        </a>
+    </div>
 </div>
+
+<script>
+    function showStep(stepNumber) {
+        // Masquer toutes les étapes
+        document.querySelectorAll('.form-step').forEach(step => step.classList.remove('form-step-active'));
+        // Masquer tous les indicateurs
+        document.querySelectorAll('.step-item').forEach(dot => dot.classList.remove('active'));
+        
+        // Afficher l'étape actuelle
+        document.getElementById('step-' + stepNumber).classList.add('form-step-active');
+        document.getElementById('dot-' + stepNumber).classList.add('active');
+        
+        // Faire remonter la page en haut pour le confort mobile
+        window.scrollTo(0, 0);
+    }
+</script>
 
 </body>
 </html>
+

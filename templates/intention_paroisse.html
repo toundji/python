@@ -3,120 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Intentions de Messe - {{ paroisse.nom }}</title>
+    <title>Registre MESHORA - {{ paroisse.nom }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Styles pour l'écran */
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; }
-        .container { max-width: 1000px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-        
-        /* Barre d'outils cachée à l'impression */
-        .no-print { 
+        :root {
+            --primary: #3e5f6e;
+            --accent: #10b981;
+            --repos: #64748b;
+            --special: #f59e0b;
+            --bg: #f8fafc;
+            --border: #e2e8f0;
+        }
+
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); margin: 0; padding: 10px; color: #1e293b; }
+        .container { max-width: 1000px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+
+        /* BARRE D'OUTILS - RECHERCHE ET IMPRESSION */
+        .toolbar { 
             display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            background: #f8fafc; 
-            padding: 20px; 
-            border-radius: 10px; 
+            flex-wrap: wrap; 
+            gap: 12px; 
             margin-bottom: 30px; 
-            border: 1px solid #e2e8f0;
+            padding: 15px; 
+            background: #fff; 
+            border: 1px solid var(--border); 
+            border-radius: 12px; 
+            align-items: center; 
         }
-        .btn { padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: 600; border: none; text-decoration: none; transition: 0.3s; }
-        .btn-print { background-color: #1e293b; color: white; }
-        .btn-print:hover { background-color: #334155; }
-        .btn-filter { background-color: #2563eb; color: white; }
-
-        /* En-tête officiel pour le prêtre */
-        .header-doc { text-align: center; border-bottom: 2px solid #1e293b; margin-bottom: 40px; padding-bottom: 20px; }
-        .header-doc h1 { margin: 0; color: #1e293b; text-transform: uppercase; font-size: 26px; }
-        .header-doc p { margin: 10px 0; font-size: 20px; font-weight: bold; color: #475569; }
-
-        /* Groupement par heure */
-        .section-heure { margin-top: 40px; page-break-inside: avoid; }
-        .titre-heure { 
-            background: #1e293b; 
-            color: #ffffff; 
-            padding: 10px 20px; 
-            font-size: 1.3em; 
-            font-weight: bold; 
-            border-radius: 5px;
-            display: inline-block;
-            margin-bottom: 15px;
-        }
-
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; }
-        th, td { border: 1px solid #cbd5e1; padding: 15px; text-align: left; }
-        th { background-color: #f1f5f9; color: #475569; font-size: 0.85em; text-transform: uppercase; letter-spacing: 1px; }
+        .filter-form { display: flex; gap: 8px; flex: 1 1 250px; }
+        .filter-form input { flex-grow: 1; padding: 8px; border-radius: 8px; border: 1px solid var(--border); height: 42px; font-size: 1rem; }
         
-        .col-donateur { width: 30%; font-weight: 700; color: #1e293b; }
-        .col-texte { width: 70%; font-size: 1.25em; line-height: 1.5; color: #000; }
+        .btn { height: 42px; padding: 0 20px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-filter { background: #f1f5f9; color: var(--primary); border: 1px solid var(--border); }
+        .btn-print { background: var(--primary); color: white; flex: 1; }
 
-        /* Ajustements Impression PDF */
-        @media print {
-            body { background: white; padding: 0; }
-            .container { box-shadow: none; width: 100%; max-width: 100%; padding: 0; border-radius: 0; }
-            .no-print { display: none !important; }
-            .titre-heure { border: 2px solid #000; color: #000; background: #eee !important; border-radius: 0; }
-            th { background-color: #f1f5f9 !important; border: 1px solid #000; color: #000; }
-            td { border: 1px solid #000; }
-            .col-texte { font-size: 1.4em; } /* Texte plus grand pour lecture facile à l'ambon */
+        /* HEADER DU DOCUMENT */
+        .doc-header { text-align: center; border-bottom: 3px double var(--primary); padding-bottom: 15px; margin-bottom: 30px; }
+        .doc-header h1 { margin: 0; color: var(--primary); text-transform: uppercase; font-size: 1.2rem; }
+        .date-badge { margin-top: 10px; display: inline-block; padding: 5px 20px; background: var(--primary); color: white; border-radius: 50px; font-weight: bold; }
+
+        /* SECTIONS PAR HEURE */
+        .hour-block { margin-top: 40px; page-break-inside: avoid; }
+        .hour-title { background: #1e293b; color: white; padding: 12px 15px; border-radius: 8px; font-weight: bold; display: flex; align-items: center; gap: 10px; }
+
+        .nature-group { margin: 25px 0 10px 5px; }
+        .nature-title { font-weight: 800; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .title-mag { color: var(--accent); }
+        .title-mra { color: var(--repos); }
+        .title-is { color: var(--special); }
+
+        /* TABLEAU DES INTENTIONS */
+        .intention-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+        .intention-table td { padding: 12px 5px; border-bottom: 1px solid #f1f5f9; vertical-align: top; font-size: 0.9rem; }
+        .col-donor { width: 35%; font-weight: 700; color: var(--primary); }
+        .col-text { width: 65%; font-style: italic; color: #334155; line-height: 1.5; padding-left: 10px !important; }
+        .phone-sub { display: block; font-size: 0.75rem; color: #94a3b8; font-weight: normal; margin-top: 4px; }
+
+        @media print { 
+            .toolbar { display: none !important; } 
+            .container { box-shadow: none; border: none; padding: 0; width: 100%; }
+            body { background: white; }
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="no-print">
-        <form method="GET" style="display: flex; gap: 12px; align-items: center;">
-            <label style="font-weight: bold;">Choisir une date :</label>
-            <input type="date" name="date" value="{{ date_selectionnee }}" style="padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;">
-            <button type="submit" class="btn btn-filter">Actualiser</button>
+    <div class="toolbar">
+        <form method="GET" action="" class="filter-form">
+            <input type="date" name="date" value="{{ date_selectionnee }}">
+            <button type="submit" class="btn btn-filter" title="Actualiser"><i class="fas fa-sync-alt"></i></button>
         </form>
-        <button onclick="window.print()" class="btn btn-print">🖨️ Imprimer / Exporter PDF</button>
+        <button onclick="window.print()" class="btn btn-print"><i class="fas fa-print"></i> Imprimer le registre</button>
     </div>
 
-    <div class="header-doc">
+    <div class="doc-header">
         <h1>{{ paroisse.nom }}</h1>
-        <p>INTENTIONS DE MESSE DU : {{ date_selectionnee }}</p>
+        <div class="date-badge">OFFICE DU {{ date_selectionnee }}</div>
     </div>
 
     {% if intentions_par_heure %}
-        {% for heure, liste in intentions_par_heure.items() %}
-        <div class="section-heure">
-            <div class="titre-heure">MESSE DE {{ heure }}</div>
-            <table>
-                <thead>
+        {% for heure, intentions in intentions_par_heure.items() %}
+        <div class="hour-block">
+            <div class="hour-title"><i class="far fa-clock"></i> MESSE DE {{ heure }}</div>
+
+            <div class="nature-group">
+                <div class="nature-title title-mag"><i class="fas fa-sun"></i> Action de grâce</div>
+                <table class="intention-table">
+                    {% for i in intentions if i.nature_id == "MAG" %}
                     <tr>
-                        <th>Donateur / Demandeur</th>
-                        <th>Intention de prière</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for int in liste %}
-                    <tr>
-                        <td class="col-donateur">
-                            {{ int.donateur }}<br>
-                            <span style="font-weight: normal; font-size: 0.85em; color: #64748b;">
-                                ({{ int.type_messe }})
-                            </span>
+                        <td class="col-donor">
+                            {{ i.donateur if i.donateur else i.nom }}
+                            {% if i.telephone and i.telephone != 'None' %}
+                                <span class="phone-sub"><i class="fas fa-phone-alt"></i> {{ i.telephone }}</span>
+                            {% endif %}
                         </td>
-                        <td class="col-texte">{{ int.texte }}</td>
+                        <td class="col-text">" {{ i.texte if i.texte else i.intention }} "</td>
                     </tr>
                     {% endfor %}
-                </tbody>
-            </table>
+                </table>
+            </div>
+
+            <div class="nature-group">
+                <div class="nature-title title-mra"><i class="fas fa-dove"></i> Repos de l'âme</div>
+                <table class="intention-table">
+                    {% for i in intentions if i.nature_id == "MRA" %}
+                    <tr>
+                        <td class="col-donor">
+                            {{ i.donateur if i.donateur else i.nom }}
+                            {% if i.telephone and i.telephone != 'None' %}
+                                <span class="phone-sub"><i class="fas fa-phone-alt"></i> {{ i.telephone }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="col-text">" {{ i.texte if i.texte else i.intention }} "</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+
+            <div class="nature-group">
+                <div class="nature-title title-is"><i class="fas fa-star"></i> Autres Intentions / Spéciales</div>
+                <table class="intention-table">
+                    {% for i in intentions if i.nature_id == "IS" or (i.nature_id != "MAG" and i.nature_id != "MRA") %}
+                    <tr>
+                        <td class="col-donor">
+                            {{ i.donateur if i.donateur else i.nom }}
+                            {% if i.telephone and i.telephone != 'None' %}
+                                <span class="phone-sub"><i class="fas fa-phone-alt"></i> {{ i.telephone }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="col-text">" {{ i.texte if i.texte else i.intention }} "</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
         </div>
         {% endfor %}
     {% else %}
-        <div style="text-align: center; padding: 100px 0; border: 2px dashed #cbd5e1; border-radius: 12px; margin-top: 20px;">
-            <p style="font-size: 1.5em; color: #94a3b8;">🙏 Aucune intention enregistrée pour le {{ date_selectionnee }}.</p>
-            <p style="color: #64748b;">Vérifiez que des intentions ont été soumises pour cette date précise via le formulaire public.</p>
+        <div style="text-align: center; padding: 60px; color: #94a3b8; border: 2px dashed #e2e8f0; border-radius: 12px; margin-top: 20px;">
+            <i class="fas fa-calendar-times fa-3x" style="margin-bottom: 15px;"></i>
+            <p>Aucune intention enregistrée pour le {{ date_selectionnee }}.</p>
         </div>
     {% endif %}
-
-    <div style="margin-top: 60px; text-align: right; font-size: 0.9em; color: #94a3b8; font-style: italic;" class="no-print">
-        Plateforme Eglise-Bénin 2026
-    </div>
 </div>
 
 </body>
 </html>
+

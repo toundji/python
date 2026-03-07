@@ -2,11 +2,10 @@ services:
   - type: web
     name: paroisse-app
     env: python
+    runtime: python-3.11.0
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn app:app
     envVars:
-      - key: PYTHON_VERSION
-        value: 3.11.0
       - key: DATABASE_URL
         fromDatabase:
           name: paroisse-db
